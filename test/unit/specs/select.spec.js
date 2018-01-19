@@ -204,6 +204,68 @@ describe('Select', () => {
     }, 100);
   });
 
+  it('single select with string as value', done => {
+    vm = createVue({
+      template: `
+        <div>
+          <el-select v-model="value" @change="handleChange">
+            <el-option
+              v-for="item in options"
+              :label="item.label"
+              :key="item.value"
+              :value="item.value">
+              <p>{{item.label}} {{item.value}}</p>
+            </el-option>
+          </el-select>
+        </div>
+      `,
+
+      data() {
+        return {
+          options: [{
+            value: 1,
+            label: '黄金糕'
+          }, {
+            value: 2,
+            label: '双皮奶'
+          }, {
+            value: 3,
+            label: '蚵仔煎'
+          }, {
+            value: 4,
+            label: '龙须面'
+          }, {
+            value: 5,
+            label: '北京烤鸭'
+          }],
+          value: '1',
+          count: 0
+        };
+      },
+
+      methods: {
+        handleChange() {
+          this.count++;
+        }
+      }
+    }, true);
+    const options = vm.$el.querySelectorAll('.el-select-dropdown__item');
+    expect(vm.value).to.equal('1');
+    triggerEvent(options[2], 'mouseenter');
+    options[2].click();
+    setTimeout(() => {
+      expect(vm.value).to.equal('选项3');
+      expect(vm.count).to.equal(1);
+      triggerEvent(options[2], 'mouseenter');
+      options[4].click();
+      setTimeout(() => {
+        expect(vm.value).to.equal('选项5');
+        expect(vm.count).to.equal(2);
+        done();
+      }, 100);
+    }, 100);
+  });
+
   it('disabled option', done => {
     vm = getSelectVm();
     vm.options[1].disabled = true;
